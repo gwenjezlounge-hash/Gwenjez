@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Gwenjez Pulse | Live Data Entry + Dashboard</title>
+  <title>Gwenjez Pulse | Lounge Management System</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -19,11 +19,33 @@
     .table-wrapper { overflow-x: auto; }
     .modal-transition { transition: opacity 0.2s ease, visibility 0.2s; }
     .input-focus:focus { outline: none; border-color: #dc2626; ring: 2px solid #fee2e2; }
+    .login-bg {
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    }
   </style>
 </head>
-<body class="antialiased">
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center login-bg">
+    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-md mx-4 p-8 text-center transform transition-all">
+      <div class="flex justify-center mb-5">
+        <div class="w-28 h-28 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
+          <i class="fas fa-champagne-glasses text-white text-5xl"></i>
+        </div>
+      </div>
+      <h1 class="text-3xl font-extrabold text-gray-800">GWENJEZ LOUNGE</h1>
+      <p class="text-gray-500 text-sm mt-1">Pulse Management System</p>
+      <div class="mt-8 space-y-4">
+        <input type="text" id="loginUsername" placeholder="Username" class="w-full border border-gray-300 rounded-xl p-3 text-center focus:ring-red-500 focus:border-red-500">
+        <input type="password" id="loginPassword" placeholder="Password" class="w-full border border-gray-300 rounded-xl p-3 text-center focus:ring-red-500 focus:border-red-500">
+        <button id="loginBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition shadow-md">Access Dashboard</button>
+        <p class="text-xs text-gray-400 mt-3">Demo: admin / admin123 or any credentials</p>
+      </div>
+    </div>
+  </div>
 
-  <div class="max-w-[1600px] mx-auto px-4 py-6 md:px-6 lg:px-8">
+  <!-- MAIN DASHBOARD (hidden until login) -->
+  <div id="dashboardApp" class="hidden max-w-[1600px] mx-auto px-4 py-6 md:px-6 lg:px-8">
     
     <!-- Header + Add Data Button -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -32,7 +54,7 @@
           <i class="fas fa-champagne-glasses text-red-600 text-2xl"></i> 
           Gwenjez Pulse
         </h1>
-        <p class="text-gray-500 text-sm mt-1">Live data entry · Feed your club metrics</p>
+        <p class="text-gray-500 text-sm mt-1">Live club command center · Kenyan Shillings (KES)</p>
       </div>
       <div class="flex flex-wrap gap-3">
         <button id="openEntryBtn" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 font-medium"><i class="fas fa-plus-circle"></i> Quick Add Sale</button>
@@ -41,21 +63,21 @@
       </div>
     </div>
 
-    <!-- TOP KPI SECTION (dynamic based on entered data) -->
+    <!-- TOP KPI SECTION (in KES) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-8">
       <div class="bg-white rounded-2xl shadow-md p-5 border-l-8 border-l-red-500 glass-card">
         <div class="flex justify-between items-start">
-          <div><p class="text-gray-500 text-sm font-medium">TOTAL SALES (TODAY)</p><p class="text-3xl font-extrabold text-gray-800 mt-1" id="totalSalesValue">$0</p></div>
+          <div><p class="text-gray-500 text-sm font-medium">TOTAL SALES (TODAY)</p><p class="text-3xl font-extrabold text-gray-800 mt-1" id="totalSalesValue">KES 0</p></div>
           <i class="fas fa-cash-register text-2xl text-red-400"></i>
         </div>
         <p class="text-xs text-green-600 mt-2"><i class="fas fa-chart-line"></i> from live entries</p>
       </div>
       <div class="bg-white rounded-2xl shadow-md p-5 border-l-8 border-l-amber-500 glass-card">
-        <div class="flex justify-between"><div><p class="text-gray-500 text-sm font-medium">REVENUE (TODAY)</p><p class="text-3xl font-extrabold text-gray-800 mt-1" id="revenueValue">$0</p></div><i class="fas fa-chart-pie text-2xl text-amber-400"></i></div>
+        <div class="flex justify-between"><div><p class="text-gray-500 text-sm font-medium">REVENUE (TODAY)</p><p class="text-3xl font-extrabold text-gray-800 mt-1" id="revenueValue">KES 0</p></div><i class="fas fa-chart-pie text-2xl text-amber-400"></i></div>
         <p class="text-xs text-gray-500 mt-2">incl. tickets & bar sales</p>
       </div>
       <div class="bg-white rounded-2xl shadow-md p-5 border-l-8 border-l-emerald-500 glass-card">
-        <div class="flex justify-between"><div><p class="text-gray-500 text-sm font-medium">EXPENSES (TODAY)</p><p class="text-3xl font-extrabold text-gray-800 mt-1" id="expensesValue">$0</p></div><i class="fas fa-receipt text-2xl text-emerald-400"></i></div>
+        <div class="flex justify-between"><div><p class="text-gray-500 text-sm font-medium">EXPENSES (TODAY)</p><p class="text-3xl font-extrabold text-gray-800 mt-1" id="expensesValue">KES 0</p></div><i class="fas fa-receipt text-2xl text-emerald-400"></i></div>
         <p class="text-xs text-gray-500 mt-2">stock costs, wastage</p>
       </div>
       <div class="bg-white rounded-2xl shadow-md p-5 border-l-8 border-l-sky-500 glass-card">
@@ -86,11 +108,11 @@
     <!-- MIDDLE SECTION: Sales Graph & Event Performance Chart -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-8">
       <div class="bg-white rounded-2xl shadow-md p-5">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold text-gray-800"><i class="fas fa-chart-line text-red-500 mr-2"></i> Sales trend (last 7 days)</h2><span class="text-xs bg-gray-100 px-2 py-1 rounded-full">live data</span></div>
+        <div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold text-gray-800"><i class="fas fa-chart-line text-red-500 mr-2"></i> Sales trend (last 7 days)</h2><span class="text-xs bg-gray-100 px-2 py-1 rounded-full">live data (KES)</span></div>
         <canvas id="salesLineChart" height="220" style="max-height: 280px;"></canvas>
       </div>
       <div class="bg-white rounded-2xl shadow-md p-5">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold text-gray-800"><i class="fas fa-calendar-star text-amber-500 mr-2"></i> Event performance (revenue)</h2></div>
+        <div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold text-gray-800"><i class="fas fa-calendar-star text-amber-500 mr-2"></i> Event performance (revenue KES)</h2></div>
         <canvas id="eventBarChart" height="220" style="max-height: 280px;"></canvas>
       </div>
     </div>
@@ -101,7 +123,7 @@
         <h2 class="font-bold text-gray-800 mb-3"><i class="fas fa-users-viewfinder text-red-500 mr-2"></i> Staff productivity ranking</h2>
         <div class="table-wrapper max-h-72 overflow-y-auto">
           <table class="min-w-full text-sm">
-            <thead class="bg-gray-50 text-gray-600 text-xs sticky top-0"><tr><th class="p-2 text-left">Staff</th><th class="p-2 text-left">Role</th><th class="p-2 text-right">Sales ($)</th><th class="p-2 text-right">Orders</th></tr></thead>
+            <thead class="bg-gray-50 text-gray-600 text-xs sticky top-0"><tr><th class="p-2 text-left">Staff</th><th class="p-2 text-left">Role</th><th class="p-2 text-right">Sales (KES)</th><th class="p-2 text-right">Orders</th></tr></thead>
             <tbody id="staffTableBody"><tr><td colspan="4" class="text-center text-gray-400">No staff data yet. Use "Staff Performance" form.</td></tr></tbody>
           </table>
         </div>
@@ -117,14 +139,14 @@
     </div>
   </div>
 
-  <!-- MODAL: Add Sale Transaction (Sales + customer + payment) -->
+  <!-- MODAL: Add Sale Transaction (in KES) -->
   <div id="saleModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden modal-transition">
     <div class="bg-white rounded-2xl w-full max-w-md mx-4 p-6 shadow-2xl">
-      <h3 class="text-xl font-bold mb-4 flex justify-between"><span><i class="fas fa-cart-plus text-red-500"></i> Record Sale</span><button class="closeModal text-gray-400 hover:text-gray-600">&times;</button></h3>
+      <h3 class="text-xl font-bold mb-4 flex justify-between"><span><i class="fas fa-cart-plus text-red-500"></i> Record Sale (KES)</span><button class="closeModal text-gray-400 hover:text-gray-600">&times;</button></h3>
       <form id="saleForm">
         <div class="mb-3"><label class="block text-sm font-medium">Drink name *</label><input type="text" id="drinkName" required class="w-full border rounded-lg p-2 input-focus" placeholder="e.g., Mojito, Heineken"></div>
         <div class="mb-3"><label class="block text-sm font-medium">Quantity</label><input type="number" id="quantity" value="1" min="1" class="w-full border rounded-lg p-2"></div>
-        <div class="mb-3"><label class="block text-sm font-medium">Price per unit ($)</label><input type="number" id="pricePerUnit" step="0.01" required class="w-full border rounded-lg p-2" placeholder="12.00"></div>
+        <div class="mb-3"><label class="block text-sm font-medium">Price per unit (KES)</label><input type="number" id="pricePerUnit" step="10" required class="w-full border rounded-lg p-2" placeholder="e.g., 1200"></div>
         <div class="mb-3"><label class="block text-sm font-medium">Waiter / Seller</label><select id="sellerSelect" class="w-full border rounded-lg p-2"><option>Alice M.</option><option>Brian K.</option><option>Cynthia J.</option><option>Dennis O.</option><option>Esther W.</option></select></div>
         <div class="mb-3"><label class="block text-sm font-medium">Payment method</label><select id="paymentMethod" class="w-full border rounded-lg p-2"><option>cash</option><option>mpesa</option><option>card</option></select></div>
         <div class="mb-3"><label class="block text-sm font-medium">Event name (optional)</label><input type="text" id="eventName" placeholder="e.g., CCI Nights Out" class="w-full border rounded-lg p-2"></div>
@@ -133,7 +155,7 @@
     </div>
   </div>
 
-  <!-- MODAL: Stock In/Out (update stock levels) -->
+  <!-- MODAL: Stock In/Out (KES costs) -->
   <div id="stockModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden modal-transition">
     <div class="bg-white rounded-2xl w-full max-w-md mx-4 p-6">
       <h3 class="text-xl font-bold mb-4 flex justify-between"><span><i class="fas fa-boxes text-amber-600"></i> Stock Adjustment</span><button class="closeModal text-gray-400">&times;</button></h3>
@@ -141,20 +163,20 @@
         <div class="mb-3"><label class="block text-sm font-medium">Product category</label><select id="stockCategory" class="w-full border rounded-lg p-2"><option>Kegs (Heineken)</option><option>Premium spirits</option><option>Shisha flavors</option><option>Soft drinks</option><option>Wine bottles</option></select></div>
         <div class="mb-3"><label class="block text-sm font-medium">Stock change ( +/- )</label><input type="number" id="stockChange" step="1" required class="w-full border rounded-lg p-2" placeholder="+20 or -5"></div>
         <div class="mb-3"><label class="block text-sm font-medium">Transaction type</label><select id="stockType" class="w-full border rounded-lg p-2"><option>Stock In (purchase)</option><option>Stock Out (usage/wastage)</option></select></div>
-        <div class="mb-3"><label class="block text-sm font-medium">Cost / expense ($)</label><input type="number" id="stockCost" step="0.01" value="0" class="w-full border rounded-lg p-2" placeholder="e.g., 240"></div>
+        <div class="mb-3"><label class="block text-sm font-medium">Cost / expense (KES)</label><input type="number" id="stockCost" step="10" value="0" class="w-full border rounded-lg p-2" placeholder="e.g., 3000"></div>
         <button type="submit" class="w-full bg-amber-600 text-white py-2 rounded-lg">Update Stock & Expenses</button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: Staff Performance (add / update staff sales ranking) -->
+  <!-- MODAL: Staff Performance -->
   <div id="staffModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden modal-transition">
     <div class="bg-white rounded-2xl w-full max-w-md mx-4 p-6">
       <h3 class="text-xl font-bold mb-4 flex justify-between"><span><i class="fas fa-chart-simple text-emerald-600"></i> Add Staff Performance</span><button class="closeModal text-gray-400">&times;</button></h3>
       <form id="staffPerformanceForm">
         <div class="mb-3"><label class="block text-sm font-medium">Staff name</label><input type="text" id="staffName" required class="w-full border rounded-lg p-2" placeholder="e.g., Grace W."></div>
         <div class="mb-3"><label class="block text-sm font-medium">Role</label><select id="staffRole" class="w-full border rounded-lg p-2"><option>Waiter</option><option>Bartender</option><option>Manager</option></select></div>
-        <div class="mb-3"><label class="block text-sm font-medium">Sales amount ($) today</label><input type="number" id="staffSales" step="0.01" class="w-full border rounded-lg p-2" placeholder="0"></div>
+        <div class="mb-3"><label class="block text-sm font-medium">Sales amount (KES) today</label><input type="number" id="staffSales" step="10" class="w-full border rounded-lg p-2" placeholder="0"></div>
         <div class="mb-3"><label class="block text-sm font-medium">Number of orders</label><input type="number" id="staffOrders" class="w-full border rounded-lg p-2" placeholder="0"></div>
         <div class="mb-3"><label class="block text-sm font-medium">Shift timing</label><input type="text" id="staffShift" placeholder="6pm-2am" class="w-full border rounded-lg p-2"></div>
         <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg">Add / Update Staff</button>
@@ -163,7 +185,25 @@
   </div>
 
   <script>
-    // --------------------- LIVE DATA STATE -------------------------
+    // ---------- LOGIN LOGIC ----------
+    const loginScreen = document.getElementById('loginScreen');
+    const dashboard = document.getElementById('dashboardApp');
+    const loginBtn = document.getElementById('loginBtn');
+    function handleLogin() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      // Accept any non-empty or simple demo check
+      if (username.length > 0 && password.length > 0) {
+        loginScreen.style.display = 'none';
+        dashboard.classList.remove('hidden');
+      } else {
+        alert('Please enter username and password (any credentials work for demo)');
+      }
+    }
+    loginBtn.addEventListener('click', handleLogin);
+    document.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleLogin(); });
+
+    // ---------- DASHBOARD STATE (KENYAN SHILLINGS) ----------
     let transactions = [];      // each: { drink, qty, priceUnit, total, seller, payment, event, timestamp }
     let stockItems = {
       'Kegs (Heineken)': { level: 62, unit: '%', lowThreshold: 30 },
@@ -173,36 +213,34 @@
       'Wine bottles': { level: 44, unit: '%', lowThreshold: 25 }
     };
     let staffData = [
-      { name: 'Alice M.', role: 'Waiter', sales: 452, orders: 38, shift: '6pm-2am' },
-      { name: 'Brian K.', role: 'Bartender', sales: 728, orders: 112, shift: '8pm-4am' },
-      { name: 'Cynthia J.', role: 'Waiter', sales: 387, orders: 31, shift: '6pm-2am' },
-      { name: 'Dennis O.', role: 'Bartender', sales: 614, orders: 95, shift: '8pm-4am' },
-      { name: 'Esther W.', role: 'Waiter', sales: 509, orders: 44, shift: '6pm-2am' }
+      { name: 'Alice M.', role: 'Waiter', sales: 58760, orders: 38, shift: '6pm-2am' },      // approx KES (452 USD *130)
+      { name: 'Brian K.', role: 'Bartender', sales: 94640, orders: 112, shift: '8pm-4am' },
+      { name: 'Cynthia J.', role: 'Waiter', sales: 50310, orders: 31, shift: '6pm-2am' },
+      { name: 'Dennis O.', role: 'Bartender', sales: 79820, orders: 95, shift: '8pm-4am' },
+      { name: 'Esther W.', role: 'Waiter', sales: 66170, orders: 44, shift: '6pm-2am' }
     ];
-    let expensesTotal = 0;   // track stock costs and wastage
-    let eventsRevenue = {     // for bar chart
-      'CCI Nights Out': 8450, 'UEFA Finals': 7120, 'Pasa Pasa Sat': 6230, 'Latin Fiesta': 4100, 'Reggae Sundown': 3520
+    let expensesTotal = 0;   // track stock costs in KES
+    let eventsRevenue = {     // KES values (converted from previous dollars 130 rate)
+      'CCI Nights Out': 1098500, 'UEFA Finals': 925600, 'Pasa Pasa Sat': 809900, 'Latin Fiesta': 533000, 'Reggae Sundown': 457600
     };
-    // daily sales for last 7 days (simulated with accumulated recent transactions)
-    let dailySalesMap = [0,0,0,0,0,0,0]; // mon-sun (today index = Sunday or dynamic, we'll use last 7 days from current date)
-    function getDayIndex() { return new Date().getDay(); } // 0=sun
     
-    // Helper: update all UI from state
+    // Helper: update all UI from state (uses KES formatting)
+    function formatKES(amount) { return `KES ${amount.toLocaleString()}`; }
+
     function refreshAll() {
-      // 1) calculate today's total sales & revenue & customers served
       const today = new Date().toDateString();
       const todayTransactions = transactions.filter(t => new Date(t.timestamp).toDateString() === today);
       const totalSalesToday = todayTransactions.reduce((sum, t) => sum + (t.qty * t.priceUnit), 0);
-      const uniqueCustomers = todayTransactions.length; // simplified
-      document.getElementById('totalSalesValue').innerHTML = `$${totalSalesToday.toLocaleString()}`;
-      document.getElementById('revenueValue').innerHTML = `$${totalSalesToday.toLocaleString()}`;
+      const uniqueCustomers = todayTransactions.length;
+      document.getElementById('totalSalesValue').innerHTML = formatKES(totalSalesToday);
+      document.getElementById('revenueValue').innerHTML = formatKES(totalSalesToday);
       document.getElementById('customersValue').innerHTML = uniqueCustomers;
-      document.getElementById('expensesValue').innerHTML = `$${expensesTotal.toLocaleString()}`;
+      document.getElementById('expensesValue').innerHTML = formatKES(expensesTotal);
       const profit = totalSalesToday - expensesTotal;
       const margin = totalSalesToday > 0 ? ((profit / totalSalesToday)*100).toFixed(1) : 0;
       document.getElementById('profitMarginValue').innerHTML = `${margin}%`;
       
-      // 2) best-selling drinks aggregate
+      // Best-selling drinks
       const drinkSales = {};
       transactions.forEach(t => { drinkSales[t.drink] = (drinkSales[t.drink] || 0) + t.qty; });
       const sortedDrinks = Object.entries(drinkSales).sort((a,b)=>b[1]-a[1]).slice(0,3);
@@ -210,7 +248,7 @@
       if(sortedDrinks.length) bestList.innerHTML = sortedDrinks.map(([name, qty]) => `<li class="flex justify-between"><span>🍹 ${name}</span><span class="font-medium">${qty} units</span></li>`).join('');
       else bestList.innerHTML = '<li class="text-gray-400 text-center text-xs">No sales yet. Add transactions →</li>';
       
-      // 3) Stock levels UI (with low alerts)
+      // Stock levels UI
       const stockContainer = document.getElementById('stockLevelsList');
       stockContainer.innerHTML = Object.entries(stockItems).map(([name, data]) => {
         let percent = data.level;
@@ -218,16 +256,16 @@
         return `<div><div class="flex justify-between"><span>${name}</span><span>${percent}%</span></div><div class="w-full bg-gray-200 rounded-full h-1.5"><div class="${color} h-1.5 rounded-full" style="width:${percent}%"></div></div></div>`;
       }).join('');
       
-      // low stock alerts list
+      // Low stock alerts
       const lowStockArray = Object.entries(stockItems).filter(([name,data]) => data.level < data.lowThreshold);
       const lowStockUl = document.getElementById('lowStockList');
       if(lowStockArray.length) lowStockUl.innerHTML = lowStockArray.map(([name]) => `<li class="flex justify-between items-center bg-red-50 p-2 rounded-lg"><span><i class="fas fa-exclamation-circle text-red-500 mr-2"></i> ${name}</span><span class="bg-red-200 text-red-700 px-2 py-0.5 rounded-full text-xs">below threshold</span></li>`).join('');
       else lowStockUl.innerHTML = '<li class="text-gray-400">✅ Stock levels healthy</li>';
       
-      // 4) Staff table + active staff count
+      // Staff table (sales in KES)
       staffData.sort((a,b)=>b.sales - a.sales);
       const tbody = document.getElementById('staffTableBody');
-      tbody.innerHTML = staffData.map(s => `<tr class="border-b"><td class="p-2 font-medium">${s.name}</td><td class="p-2">${s.role}</td><td class="p-2 text-right">$${s.sales}</td><td class="p-2 text-right">${s.orders}</td></tr>`).join('');
+      tbody.innerHTML = staffData.map(s => `<tr class="border-b"><td class="p-2 font-medium">${s.name}</td><td class="p-2">${s.role}</td><td class="p-2 text-right">${formatKES(s.sales)}</td><td class="p-2 text-right">${s.orders}</td></tr>`).join('');
       const activeCount = staffData.length;
       const waiterCount = staffData.filter(s=>s.role==='Waiter').length;
       const bartenderCount = staffData.filter(s=>s.role==='Bartender').length;
@@ -235,24 +273,23 @@
       document.getElementById('waiterCount').innerHTML = waiterCount;
       document.getElementById('bartenderCount').innerHTML = bartenderCount;
       
-      // 5) Recent transactions
+      // Recent transactions
       const recentDiv = document.getElementById('recentTransactionsList');
       if(transactions.length) {
-        recentDiv.innerHTML = transactions.slice(-8).reverse().map(t => `<div class="flex justify-between text-xs border-b pb-1"><span><span class="font-medium">${t.drink}</span> - ${t.seller}</span><span>$${(t.qty*t.priceUnit).toFixed(2)} · ${new Date(t.timestamp).toLocaleTimeString()}</span></div>`).join('');
+        recentDiv.innerHTML = transactions.slice(-8).reverse().map(t => `<div class="flex justify-between text-xs border-b pb-1"><span><span class="font-medium">${t.drink}</span> - ${t.seller}</span><span>${formatKES(t.qty*t.priceUnit)} · ${new Date(t.timestamp).toLocaleTimeString()}</span></div>`).join('');
       } else recentDiv.innerHTML = '<p class="text-gray-400 text-sm">No transactions yet</p>';
       
-      // 6) Update sales line chart based on aggregated daily sales (last 7 days simulated using transaction timestamps)
+      // Update sales line chart (last 7 days KES aggregated)
       const dailyAgg = Array(7).fill(0);
       transactions.forEach(t => {
         const dayIndex = new Date(t.timestamp).getDay();
         dailyAgg[dayIndex] += t.qty * t.priceUnit;
       });
-      // map to mon-sun order: getDay: 0=sun,1=mon... we display mon-sun
       const ordered = [dailyAgg[1], dailyAgg[2], dailyAgg[3], dailyAgg[4], dailyAgg[5], dailyAgg[6], dailyAgg[0]];
       salesChart.data.datasets[0].data = ordered;
       salesChart.update();
       
-      // 7) Update event chart: aggregate revenue by event from transactions
+      // Event chart update
       const eventRevMap = { ...eventsRevenue };
       transactions.forEach(t => {
         if(t.event && t.event.trim() !== "") {
@@ -266,7 +303,7 @@
       eventChart.update();
     }
     
-    // Helper: add sale transaction
+    // Add sale (KES)
     function addSale(drink, qty, priceUnit, seller, payment, eventName) {
       const total = qty * priceUnit;
       const newTrans = {
@@ -274,32 +311,28 @@
         timestamp: new Date()
       };
       transactions.push(newTrans);
-      // update staff sales/orders
       const staffIdx = staffData.findIndex(s => s.name === seller);
       if(staffIdx !== -1) {
         staffData[staffIdx].sales += total;
         staffData[staffIdx].orders += qty;
       } else {
-        // auto add new staff if not exists (simple)
         staffData.push({ name: seller, role: 'Waiter', sales: total, orders: qty, shift: 'custom' });
       }
       refreshAll();
     }
     
-    // Stock adjustment: updates level and expenses
+    // Stock adjustment (KES expenses)
     function adjustStock(category, delta, cost, type) {
       if(stockItems[category]) {
         let newLevel = stockItems[category].level + delta;
         if(newLevel < 0) newLevel = 0;
         if(newLevel > 100) newLevel = 100;
         stockItems[category].level = newLevel;
-        if(type === 'Stock Out (usage/wastage)' && cost > 0) expensesTotal += cost;
-        if(type === 'Stock In (purchase)' && cost > 0) expensesTotal += cost;
+        if(cost > 0) expensesTotal += cost;
         refreshAll();
       }
     }
     
-    // Staff performance manual add/update
     function addOrUpdateStaff(name, role, sales, orders, shift) {
       const idx = staffData.findIndex(s => s.name === name);
       if(idx !== -1) {
@@ -340,8 +373,7 @@
       const category = document.getElementById('stockCategory').value;
       let change = parseInt(document.getElementById('stockChange').value);
       const cost = parseFloat(document.getElementById('stockCost').value) || 0;
-      const type = document.getElementById('stockType').value;
-      adjustStock(category, change, cost, type);
+      adjustStock(category, change, cost);
       closeAllModals();
       document.getElementById('stockForm').reset();
     });
@@ -357,22 +389,22 @@
       document.getElementById('staffPerformanceForm').reset();
     });
     
-    // chart init
+    // Charts
     const ctxLine = document.getElementById('salesLineChart').getContext('2d');
     const salesChart = new Chart(ctxLine, {
-      type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Daily Sales ($)', data: [0,0,0,0,0,0,0], borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.05)', borderWidth: 3, pointBackgroundColor: '#b91c1c', fill: true, tension: 0.3 }] },
-      options: { responsive: true, maintainAspectRatio: true }
+      type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Daily Sales (KES)', data: [0,0,0,0,0,0,0], borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.05)', borderWidth: 3, pointBackgroundColor: '#b91c1c', fill: true, tension: 0.3 }] },
+      options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { callbacks: { label: (ctx) => `KES ${ctx.raw.toLocaleString()}` } } } }
     });
     const ctxBar = document.getElementById('eventBarChart').getContext('2d');
-    const eventChart = new Chart(ctxBar, { type: 'bar', data: { labels: [], datasets: [{ label: 'Revenue ($)', data: [], backgroundColor: '#f59e0b', borderRadius: 8 }] }, options: { responsive: true } });
+    const eventChart = new Chart(ctxBar, { type: 'bar', data: { labels: [], datasets: [{ label: 'Revenue (KES)', data: [], backgroundColor: '#f59e0b', borderRadius: 8 }] }, options: { responsive: true, plugins: { tooltip: { callbacks: { label: (ctx) => `KES ${ctx.raw.toLocaleString()}` } } } } });
     
-    // add some demo transaction to avoid empty start
+    // Seed demo data in KES (club style)
     setTimeout(() => {
-      addSale('Mojito', 3, 12, 'Brian K.', 'cash', 'CCI Nights Out');
-      addSale('Heineken', 6, 5, 'Alice M.', 'mpesa', 'UEFA Finals');
-      adjustStock('Kegs (Heineken)', -8, 40, 'Stock Out (usage/wastage)');
-      refreshAll();
-    }, 100);
+      addSale('Mojito', 3, 1200, 'Brian K.', 'cash', 'CCI Nights Out');
+      addSale('Heineken', 6, 500, 'Alice M.', 'mpesa', 'UEFA Finals');
+      addSale('Old Monk', 2, 1800, 'Dennis O.', 'card', 'Pasa Pasa Sat');
+      adjustStock('Kegs (Heineken)', -8, 3000, 'Stock Out (usage/wastage)');
+    }, 200);
   </script>
 </body>
 </html>
